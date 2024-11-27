@@ -13,9 +13,10 @@ import Notification from './Notification';
 
 interface NavbarProps {
   bgColor?: string;
+  credits: number;
 }
 
-export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
+export default function Navbar({ bgColor = '#110219', credits }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<string>('');
   const [session, setSession] = useState<any>(null);
@@ -31,11 +32,6 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
   }, []);
 
   const user = (session?.user as CustomUser) || null;
-
-  async function getSessionData() {
-    const sessionData = await getSession();
-  }
-  getSessionData();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -53,6 +49,7 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo Section */}
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <Image
@@ -64,6 +61,8 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               />
             </Link>
           </div>
+
+          {/* Navigation Links */}
           <div className="hidden ml-5 md:flex md:items-center md:space-x-4">
             <Link
               href="/events"
@@ -77,7 +76,7 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               Events
             </Link>
             <Link
-              href="gamePass"
+              href="/gamePass"
               className={`text-md ${
                 activeLink === 'gamePass'
                   ? 'text-fuchsia-600'
@@ -86,6 +85,17 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               onClick={() => handleLinkClick('gamePass')}
             >
               Game Pass
+            </Link>
+            <Link
+              href="/marketplace"
+              className={`text-md ${
+                activeLink === 'marketplace'
+                  ? 'text-fuchsia-600'
+                  : 'hover:text-fuchsia-600'
+              }`}
+              onClick={() => handleLinkClick('marketplace')}
+            >
+              Marketplace
             </Link>
             <Link
               href="/aboutus"
@@ -102,17 +112,25 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               <Link
                 href={`/user/${encodeURI(session.user.name)}`}
                 className={`text-md ${
-                  activeLink === 'aboutUs'
+                  activeLink === 'user'
                     ? 'text-fuchsia-600'
                     : 'hover:text-fuchsia-600'
                 }`}
-                onClick={() => handleLinkClick('user/${userid}')}
+                onClick={() => handleLinkClick('user')}
               >
                 My Account
               </Link>
             )}
           </div>
-          <div className="hidden md:flex ml-20 md:items-center">
+
+          {/* Right Section (Credits + User Actions) */}
+          <div className="hidden md:flex items-center space-x-6">
+            {/* Credits Card */}
+            <div className="bg-yellow-500 text-black py-2 px-4 rounded-md text-lg font-semibold shadow-md">
+              Credits: {credits}
+            </div>
+
+            {/* User Section */}
             <div className="relative flex items-center">
               {loading ? (
                 <div className="w-[160px] flex items-center justify-center gap-2">
@@ -142,7 +160,7 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
                   <Link
                     href="/login"
                     prefetch={false}
-                    className=" relative text-white px-3.5 py-0.5 text-base font-semibold overflow-hidden"
+                    className="relative text-white px-3.5 py-0.5 text-base font-semibold overflow-hidden"
                     onClick={() => handleLinkClick('login')}
                   >
                     <div className="pentagon bg-[#d600e1] absolute inset-0"></div>
@@ -154,6 +172,8 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               )}
             </div>
           </div>
+
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <button
               onClick={toggleMenu}
@@ -168,6 +188,8 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -202,18 +224,18 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
               <Link
                 href={`/user/${encodeURI(session.user.name)}`}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  activeLink === 'aboutUs' ? 'bg-gray-700' : 'hover:bg-gray-700'
+                  activeLink === 'user' ? 'bg-gray-700' : 'hover:bg-gray-700'
                 }`}
-                onClick={() => handleLinkClick('user/${userid}')}
+                onClick={() => handleLinkClick('user')}
               >
                 My Account
               </Link>
             )}
 
             {session ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2">
                 <Notification />
-                <div className="flex items-center px-3 py-2">
+                <div className="flex items-center">
                   <Image
                     src={session.user?.image || User}
                     alt="User Avatar"
@@ -222,10 +244,8 @@ export default function Navbar({ bgColor = '#110219' }: NavbarProps) {
                     className="rounded-full mr-2"
                   />
                   <button
-                    onClick={() => {
-                      signOut();
-                    }}
-                    className="px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => signOut()}
+                    className="text-white hover:text-fuchsia-600"
                   >
                     Logout
                   </button>
